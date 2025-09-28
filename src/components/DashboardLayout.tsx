@@ -19,7 +19,7 @@ const DashboardLayout: React.FC<SidebarProps> = ({
   const [isDarkMode, setDarkMode] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { t } = useLanguage();
+  const { t, language, setLanguage } = useLanguage();
 
   const studentMenuItems = [
     { 
@@ -106,8 +106,25 @@ const DashboardLayout: React.FC<SidebarProps> = ({
         }`}
       >
         <div className="flex items-center justify-between h-16 px-4 bg-primary-900 dark:bg-gray-800">
-          <div className="flex items-center">
-            <span className="text-xl font-semibold text-white">Punjab Nabha</span>
+          <div className="flex items-center space-x-2">
+            <div className="relative">
+              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" 
+                />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                  d="M9 5v2m6-2v2M9 16h6" 
+                  className="text-primary-200"
+                />
+              </svg>
+              <div className="absolute -top-1 -right-1 w-3 h-3 bg-primary-400 rounded-full flex items-center justify-center">
+                <span className="text-white text-xs font-bold">E</span>
+              </div>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-xl font-bold text-white tracking-tight">Edu<span className="text-primary-300">Nabha</span></span>
+              <span className="text-xs text-primary-200 -mt-1">{t('gateway_to_learning')}</span>
+            </div>
           </div>
           <button
             onClick={() => setSidebarOpen(false)}
@@ -206,6 +223,22 @@ const DashboardLayout: React.FC<SidebarProps> = ({
                 </div>
               </div>
               <div className="flex items-center space-x-4">
+                {/* Language Switcher */}
+                <div className="relative">
+                  <select
+                    onChange={(e) => setLanguage(e.target.value as 'english' | 'hindi' | 'punjabi')}
+                    className="appearance-none bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md py-2 pl-3 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  >
+                    <option value="english">English</option>
+                    <option value="hindi">हिंदी</option>
+                    <option value="punjabi">ਪੰਜਾਬੀ</option>
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-300">
+                    <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
                 {/* Notifications */}
                 <button className="p-2 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white focus:outline-none">
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -218,7 +251,7 @@ const DashboardLayout: React.FC<SidebarProps> = ({
                   <button className="flex items-center space-x-3">
                     <img
                       className="h-8 w-8 rounded-full"
-                      src="https://ui-avatars.com/api/?name=User&background=0D8ABC&color=fff"
+                      src={`https://ui-avatars.com/api/?name=${t('student_name')}&background=0D8ABC&color=fff`}
                       alt=""
                     />
                     <span className="hidden md:block text-sm font-medium text-gray-700 dark:text-gray-200">

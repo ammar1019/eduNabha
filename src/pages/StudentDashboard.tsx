@@ -7,12 +7,21 @@ import PerformanceCharts from '../components/PerformanceCharts';
 import ResourcesSection from '../components/ResourcesSection';
 
 // Keep the existing data objects
-const subjects = [
+interface Subject {
+  id: number;
+  name: string;
+  progress: number;
+  teacher: string;
+  nextClass: string;
+  resources: Array<{ name: string; type: string; }>;
+}
+
+const getSubjects = (t: (key: string) => string): Subject[] => [
   { 
     id: 1, 
-    name: 'Mathematics', 
+    name: t('subject_math'),
     progress: 75,
-    teacher: 'Dr. Smith',
+    teacher: 'ਡਾ. ਜਸਪ੍ਰੀਤ ਸਿੰਘ',
     nextClass: '2023-10-01 09:00 AM',
     resources: [
       { name: 'Algebra Notes', type: 'pdf' },
@@ -24,7 +33,7 @@ const subjects = [
     id: 2, 
     name: 'Science', 
     progress: 60,
-    teacher: 'Mrs. Johnson',
+    teacher: 'Dr. Gagandeep Kaur',
     nextClass: '2023-10-02 11:00 AM',
     resources: [
       { name: 'Lab Manual', type: 'pdf' },
@@ -35,7 +44,7 @@ const subjects = [
     id: 3, 
     name: 'English', 
     progress: 90,
-    teacher: 'Mr. Williams',
+    teacher: 'Prof. Manpreet Singh',
     nextClass: '2023-10-01 02:00 PM',
     resources: [
       { name: 'Literature Review', type: 'pdf' },
@@ -46,7 +55,7 @@ const subjects = [
     id: 4, 
     name: 'History', 
     progress: 85,
-    teacher: 'Ms. Davis',
+    teacher: 'Dr. Harpreet Kaur',
     nextClass: '2023-10-03 10:00 AM',
     resources: [
       { name: 'Timeline Document', type: 'pdf' },
@@ -153,7 +162,55 @@ const upcomingEvents = [
 ];
 
 const StudentDashboard = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  
+  const subjects = [
+    { 
+      id: 1, 
+      name: language === 'punjabi' ? 'ਗਣਿਤ' : 'Mathematics',
+      progress: 75,
+      teacher: language === 'punjabi' ? 'ਡਾ. ਜਸਪ੍ਰੀਤ ਸਿੰਘ' : 'Dr. Jaspreet Singh',
+      nextClass: '2023-10-01 09:00 AM',
+      resources: [
+        { name: language === 'punjabi' ? 'ਬੀਜ ਗਣਿਤ ਨੋਟਸ' : 'Algebra Notes', type: 'pdf' },
+        { name: language === 'punjabi' ? 'ਅਭਿਆਸ ਸਮੱਸਿਆਵਾਂ' : 'Practice Problems', type: 'doc' },
+        { name: language === 'punjabi' ? 'ਵੀਡੀਓ ਲੈਕਚਰ' : 'Video Lecture', type: 'video' }
+      ]
+    },
+    { 
+      id: 2, 
+      name: language === 'punjabi' ? 'ਵਿਗਿਆਨ' : 'Science',
+      progress: 60,
+      teacher: language === 'punjabi' ? 'ਡਾ. ਗਗਨਦੀਪ ਕੌਰ' : 'Dr. Gagandeep Kaur',
+      nextClass: '2023-10-02 11:00 AM',
+      resources: [
+        { name: language === 'punjabi' ? 'ਲੈਬ ਮੈਨੂਅਲ' : 'Lab Manual', type: 'pdf' },
+        { name: language === 'punjabi' ? 'ਪ੍ਰਯੋਗ ਨਤੀਜੇ' : 'Experiment Results', type: 'xlsx' }
+      ]
+    },
+    { 
+      id: 3, 
+      name: language === 'punjabi' ? 'ਅੰਗਰੇਜ਼ੀ' : 'English',
+      progress: 90,
+      teacher: language === 'punjabi' ? 'ਪ੍ਰੋ. ਮਨਪ੍ਰੀਤ ਸਿੰਘ' : 'Prof. Manpreet Singh',
+      nextClass: '2023-10-01 02:00 PM',
+      resources: [
+        { name: language === 'punjabi' ? 'ਸਾਹਿਤ ਸਮੀਖਿਆ' : 'Literature Review', type: 'pdf' },
+        { name: language === 'punjabi' ? 'ਵਿਆਕਰਨ ਗਾਈਡ' : 'Grammar Guide', type: 'pdf' }
+      ]
+    },
+    { 
+      id: 4, 
+      name: language === 'punjabi' ? 'ਇਤਿਹਾਸ' : 'History',
+      progress: 85,
+      teacher: language === 'punjabi' ? 'ਡਾ. ਹਰਪ੍ਰੀਤ ਕੌਰ' : 'Dr. Harpreet Kaur',
+      nextClass: '2023-10-03 10:00 AM',
+      resources: [
+        { name: language === 'punjabi' ? 'ਸਮਾਂ ਰੇਖਾ ਦਸਤਾਵੇਜ਼' : 'Timeline Document', type: 'pdf' },
+        { name: language === 'punjabi' ? 'ਇਤਿਹਾਸਕ ਨਕਸ਼ੇ' : 'Historical Maps', type: 'image' }
+      ]
+    }
+  ];
   const [activeTab, setActiveTab] = useState('overview');
   const [selectedSubject, setSelectedSubject] = useState(subjects[0]);
 
@@ -349,9 +406,43 @@ const StudentDashboard = () => {
           <div className="space-y-6">
             <div className="bg-white dark:bg-primary-800 p-6 rounded-lg shadow-lg">
               <h2 className="text-2xl font-semibold mb-6 text-gray-800 dark:text-white">
-                Attendance Calendar
+                {t('attendance')}
               </h2>
-              <AttendanceCalendar month={new Date()} />
+              <div className="w-full overflow-auto">
+                <AttendanceCalendar month={new Date()} />
+              </div>
+              <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="p-4 bg-green-50 dark:bg-green-900 rounded-lg">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+                      {attendance.percentage}%
+                    </div>
+                    <div className="text-sm text-green-800 dark:text-green-200">
+                      {t('attendance_rate')}
+                    </div>
+                  </div>
+                </div>
+                <div className="p-4 bg-blue-50 dark:bg-blue-900 rounded-lg">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                      {attendance.present}
+                    </div>
+                    <div className="text-sm text-blue-800 dark:text-blue-200">
+                      Days Present
+                    </div>
+                  </div>
+                </div>
+                <div className="p-4 bg-purple-50 dark:bg-purple-900 rounded-lg">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                      {attendance.total - attendance.present}
+                    </div>
+                    <div className="text-sm text-purple-800 dark:text-purple-200">
+                      Days Absent
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         );

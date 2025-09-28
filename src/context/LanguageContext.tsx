@@ -11,6 +11,7 @@ export type TranslationKey =
   | 'active_courses' | 'upcoming_events' | 'recent_activity' | 'students'
   | 'manage_classes' | 'class_performance' | 'teaching_schedule'
   | 'my_assignments' | 'course_materials' | 'learning_progress'
+  | 'gateway_to_learning'
   // Student Dashboard
   | 'next_class' | 'teacher_label' | 'progress_label' | 'download' | 'upcoming_classes'
   | 'all_assignments' | 'subject' | 'title' | 'due_date' | 'status' | 'actions'
@@ -32,7 +33,7 @@ interface LanguageContextType {
 const translations: Record<Language, TranslationSet> = {
   english: {
     // Common
-    'welcome': 'Welcome to Punjab Nabha Education Portal',
+    'welcome': 'Welcome to EduNabha',
     'login': 'Already have an account? Login here',
     'register': 'Register',
     'logout': 'Logout',
@@ -102,10 +103,11 @@ const translations: Record<Language, TranslationSet> = {
     'notifications': 'Notifications',
     'student_name': 'Student Name',
     'teacher_name': 'Teacher Name',
+    'gateway_to_learning': 'Gateway to Digital Learning',
   },
   hindi: {
     // Common
-    'welcome': 'पंजाब नाभा शिक्षा पोर्टल में आपका स्वागत है',
+    'welcome': 'एडूनाभा में आपका स्वागत है',
     'login': 'पहले से खाता है? यहाँ लॉगिन करें',
     'register': 'पंजीकरण करें',
     'logout': 'लॉग आउट',
@@ -175,10 +177,11 @@ const translations: Record<Language, TranslationSet> = {
     'notifications': 'सूचनाएं',
     'student_name': 'छात्र का नाम',
     'teacher_name': 'शिक्षक का नाम',
+    'gateway_to_learning': 'डिजिटल शिक्षा का द्वार',
   },
   punjabi: {
     // Common
-    'welcome': 'ਪੰਜਾਬ ਨਾਭਾ ਸਿੱਖਿਆ ਪੋਰਟਲ ਵਿੱਚ ਤੁਹਾਡਾ ਸਵਾਗਤ ਹੈ',
+    'welcome': 'ਏਡੂਨਾਭਾ ਵਿੱਚ ਤੁਹਾਡਾ ਸਵਾਗਤ ਹੈ',
     'login': 'ਪਹਿਲਾਂ ਤੋਂ ਖਾਤਾ ਹੈ? ਇੱਥੇ ਲੌਗਇਨ ਕਰੋ',
     'register': 'ਰਜਿਸਟਰ ਕਰੋ',
     'logout': 'ਲੌਗ ਆਊਟ',
@@ -247,7 +250,8 @@ const translations: Record<Language, TranslationSet> = {
     'light_mode': 'ਲਾਈਟ ਮੋਡ',
     'notifications': 'ਸੂਚਨਾਵਾਂ',
     'student_name': 'ਵਿਦਿਆਰਥੀ ਦਾ ਨਾਮ',
-    'teacher_name': 'ਅਧਿਆਪਕ ਦਾ ਨਾਮ'
+    'teacher_name': 'ਅਧਿਆਪਕ ਦਾ ਨਾਮ',
+    'gateway_to_learning': 'ਡਿਜੀਟਲ ਸਿੱਖਿਆ ਦਾ ਦੁਆਰ'
   }
 };
 
