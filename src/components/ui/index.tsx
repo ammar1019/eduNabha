@@ -13,32 +13,57 @@ interface StatCardProps {
 }
 
 export const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color = 'primary', trend }) => {
-  const colorClasses = {
-    primary: 'from-primary-500 to-primary-600',
-    success: 'from-green-500 to-green-600',
-    warning: 'from-yellow-500 to-yellow-600',
-    danger: 'from-red-500 to-red-600',
-    info: 'from-blue-500 to-blue-600',
-    purple: 'from-purple-500 to-purple-600'
+  const palette = {
+    primary: {
+      icon: 'bg-primary-100 text-primary-600',
+      border: 'border-primary-100',
+      accent: 'from-primary-200/30 to-transparent',
+    },
+    success: {
+      icon: 'bg-green-100 text-green-600',
+      border: 'border-green-100',
+      accent: 'from-green-200/30 to-transparent',
+    },
+    warning: {
+      icon: 'bg-yellow-100 text-yellow-600',
+      border: 'border-yellow-100',
+      accent: 'from-yellow-200/40 to-transparent',
+    },
+    danger: {
+      icon: 'bg-red-100 text-red-600',
+      border: 'border-red-100',
+      accent: 'from-red-200/30 to-transparent',
+    },
+    info: {
+      icon: 'bg-blue-100 text-blue-600',
+      border: 'border-blue-100',
+      accent: 'from-blue-200/30 to-transparent',
+    },
+    purple: {
+      icon: 'bg-purple-100 text-purple-600',
+      border: 'border-purple-100',
+      accent: 'from-purple-200/30 to-transparent',
+    },
   } as const;
 
+  const tone = palette[color as keyof typeof palette];
+
   return (
-    <div className={`bg-gradient-to-br ${colorClasses[color]} rounded-lg p-6 text-white`}>
-      <div className="flex items-center justify-between">
+    <div className={`relative overflow-hidden rounded-2xl border ${tone.border} bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-glow dark:border-slate-800 dark:bg-slate-900`}>
+      <div className={`absolute inset-x-6 top-0 h-28 rounded-b-[48px] bg-gradient-to-br ${tone.accent} opacity-60`} />
+      <div className="relative flex items-start justify-between">
         <div>
-          <p className={`text-${color}-100`}>{title}</p>
-          <h3 className="text-3xl font-bold">{value}</h3>
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{title}</p>
+          <h3 className="mt-3 text-3xl font-semibold text-slate-900 dark:text-white">{value}</h3>
         </div>
-        <div className={`text-${color}-300`}>{icon}</div>
+        <div className={`rounded-2xl p-3 ${tone.icon}`}>{icon}</div>
       </div>
       {trend && (
-        <div className="mt-4">
-          <div className="flex items-center space-x-2">
-            <span className={`${trend.isPositive ? 'text-green-300' : 'text-red-300'}`}>
-              {trend.isPositive ? '↑' : '↓'} {trend.value}%
-            </span>
-            <span className={`text-${color}-100 text-sm`}>{trend.label}</span>
-          </div>
+        <div className="relative mt-4 flex items-center gap-2 text-sm">
+          <span className={`font-semibold ${trend.isPositive ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400'}`}>
+            {trend.isPositive ? '▲' : '▼'} {trend.value}%
+          </span>
+          <span className="text-slate-400 dark:text-slate-500">{trend.label}</span>
         </div>
       )}
     </div>

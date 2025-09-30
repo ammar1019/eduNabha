@@ -7,6 +7,10 @@ export default {
   darkMode: 'class',
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['Poppins', 'Inter', 'system-ui', 'sans-serif'],
+      },
       colors: {
         primary: {
           50: '#eef8ff',
@@ -21,6 +25,17 @@ export default {
           900: '#1b408d',
           950: '#152754',
         },
+        slate: {
+          950: '#020617',
+        },
+        accent: {
+          500: '#f97316',
+          600: '#ea580c',
+        },
+      },
+      boxShadow: {
+        'glow': '0 20px 45px -24px rgba(26, 113, 245, 0.6)',
+        'soft': '0 18px 40px -30px rgba(15, 23, 42, 0.45)'
       },
       typography: (theme) => ({
         dark: {

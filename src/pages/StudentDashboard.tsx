@@ -1,10 +1,17 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import AttendanceCalendar from '../components/AttendanceCalendar';
 import DashboardLayout from '../components/DashboardLayout';
 import { StatCard, Button, Card, ProgressBar, Badge } from '../components/ui';
 import { useLanguage } from '../context/LanguageContext';
 import PerformanceCharts from '../components/PerformanceCharts';
 import ResourcesSection from '../components/ResourcesSection';
+import {
+  AcademicCapIcon,
+  ArrowRightIcon,
+  CalendarDaysIcon,
+  ClipboardDocumentCheckIcon,
+  PlayCircleIcon,
+} from '@heroicons/react/24/outline';
 
 // Keep the existing data objects
 interface Subject {
@@ -214,36 +221,51 @@ const StudentDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [selectedSubject, setSelectedSubject] = useState(subjects[0]);
 
+  const upcomingClass = subjects[0];
+  const nextAssignment = assignments.find((assignment) => assignment.status === 'Pending');
+
+  const quickActions = useMemo(() => {
+    const totalResources = subjects.reduce((acc, subject) => acc + subject.resources.length, 0);
+    return [
+      {
+        id: 'class',
+        title: 'Join your next class',
+        description: upcomingClass ? `${upcomingClass.name} • ${upcomingClass.nextClass}` : 'No sessions scheduled',
+        icon: <PlayCircleIcon className="h-5 w-5" />,
+      },
+      {
+        id: 'assignment',
+        title: 'Complete pending assignment',
+        description: nextAssignment ? `${nextAssignment.title} · Due ${nextAssignment.dueDate}` : 'All assignments submitted',
+        icon: <ClipboardDocumentCheckIcon className="h-5 w-5" />,
+      },
+      {
+        id: 'resources',
+        title: 'Review learning resources',
+        description: `${totalResources} materials curated for you`,
+        icon: <AcademicCapIcon className="h-5 w-5" />,
+      },
+    ];
+  }, [subjects, upcomingClass, nextAssignment]);
+
   const renderStatCards = () => (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
       <StatCard
         title="Attendance Rate"
         value={`${attendance.percentage}%`}
-        icon={
-          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-        }
+        icon={<CalendarDaysIcon className="h-6 w-6" />}
         trend={{ value: 5, label: t('vs_last_month'), isPositive: true }}
       />
       <StatCard
-        title="Assignments"
-        value={`${assignments.filter(a => a.status === 'Submitted').length}/${assignments.length}`}
-        icon={
-          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-          </svg>
-        }
+        title="Assignments Submitted"
+        value={`${assignments.filter((a) => a.status === 'Submitted').length}/${assignments.length}`}
+        icon={<ClipboardDocumentCheckIcon className="h-6 w-6" />}
         color="success"
       />
       <StatCard
         title="Active Courses"
         value={subjects.length}
-        icon={
-          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-          </svg>
-        }
+        icon={<AcademicCapIcon className="h-6 w-6" />}
         color="purple"
       />
     </div>
@@ -253,86 +275,167 @@ const StudentDashboard = () => {
     switch (activeTab) {
       case 'overview':
         return (
-          <div className="space-y-6">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-              <div className="flex justify-between items-center mb-6">
-                <div>
-                  <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">{t('welcome_back')}</h2>
-                  <p className="text-gray-500 dark:text-gray-400">{t('learning_progress')}.</p>
-                </div>
-              </div>
-              {renderStatCards()}
-            </div>
-
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-              <div className="xl:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-white dark:bg-primary-800 p-6 rounded-lg shadow-lg">
-                  <h3 className="text-lg font-semibold mb-4 text-primary-900 dark:text-primary-100">{t('recent_activity')}</h3>
-                  <div className="space-y-3">
-                    {assignments.slice(0, 3).map(assignment => (
-                      <div key={assignment.id} className="flex items-center space-x-3 text-sm">
-                        <div className={`w-2 h-2 rounded-full ${
-                          assignment.status === 'Submitted' ? 'bg-green-500' : 'bg-yellow-500'
-                        }`}></div>
-                        <p className="text-gray-700 dark:text-gray-200">{assignment.title}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                
-                <div className="bg-white dark:bg-primary-800 p-6 rounded-lg shadow-lg">
-                  <h3 className="text-lg font-semibold mb-4 text-primary-900 dark:text-primary-100">{t('quick_stats')}</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="text-center p-4 bg-primary-50 dark:bg-primary-700 rounded-lg">
-                      <div className="text-3xl font-bold text-primary-600 dark:text-primary-200">{attendance.percentage}%</div>
-                      <p className="text-primary-700 dark:text-primary-300">{t('attendance')}</p>
-                    </div>
-                    <div className="text-center p-4 bg-primary-50 dark:bg-primary-700 rounded-lg">
-                      <div className="text-3xl font-bold text-primary-600 dark:text-primary-200">
-                        {assignments.filter(a => a.status === 'Submitted').length}/{assignments.length}
-                      </div>
-                      <p className="text-primary-700 dark:text-primary-300">Assignments</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="md:col-span-2 bg-white dark:bg-primary-800 p-6 rounded-lg shadow-lg">
-                  <h3 className="text-lg font-semibold mb-4 text-primary-900 dark:text-primary-100">{t('upcoming_events')}</h3>
+          <div className="space-y-8">
+            <section className="grid grid-cols-1 gap-6 xl:grid-cols-[2fr_1fr]">
+              <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary-600 via-primary-500 to-primary-400 p-8 text-white shadow-glow">
+                <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
                   <div className="space-y-4">
-                    {upcomingEvents.map(event => (
-                      <div key={event.id} className="flex items-center justify-between border-b pb-3">
-                        <div>
-                          <h4 className="font-medium text-primary-700 dark:text-primary-200">{event.title}</h4>
-                          <p className="text-sm text-gray-600 dark:text-gray-300">{event.location}</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-medium text-primary-600 dark:text-primary-300">{event.date}</p>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">{event.time}</p>
-                        </div>
-                      </div>
-                    ))}
+                    <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-white/80">
+                      {t('welcome_back')}
+                    </span>
+                    <h2 className="text-3xl font-semibold leading-tight sm:text-4xl">Keep your learning streak alive today.</h2>
+                    <p className="text-white/80 max-w-xl">{t('learning_progress')}.</p>
                   </div>
+                  <div className="rounded-3xl bg-white/15 p-6 text-sm backdrop-blur">
+                    <p className="text-xs font-semibold uppercase tracking-[0.25em] text-white/70">Next class</p>
+                    <p className="mt-3 text-lg font-semibold">
+                      {subjects[0]?.name}
+                    </p>
+                    <p className="text-white/70">{subjects[0]?.nextClass}</p>
+                    <p className="mt-4 text-sm text-white/80">With {subjects[0]?.teacher}</p>
+                  </div>
+                </div>
+
+                <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {quickActions.map((action) => (
+                    <button
+                      key={action.id}
+                      className="group flex w-full items-center justify-between rounded-2xl bg-white/90 px-4 py-4 text-left text-slate-700 shadow-sm transition hover:-translate-y-1 hover:bg-white"
+                      type="button"
+                    >
+                      <div>
+                        <p className="text-sm font-semibold text-slate-900">{action.title}</p>
+                        <p className="mt-1 text-xs text-slate-500">{action.description}</p>
+                      </div>
+                      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-600 transition group-hover:bg-primary-200">
+                        {action.icon}
+                      </span>
+                    </button>
+                  ))}
                 </div>
               </div>
 
-              <div className="xl:col-span-1">
-                <div className="bg-white dark:bg-primary-800 p-6 rounded-lg shadow-lg mb-6">
-                  <h3 className="text-lg font-semibold mb-4 text-primary-900 dark:text-primary-100">{t('announcements')}</h3>
-                  <div className="space-y-4">
-                    {announcements.map(announcement => (
-                      <div key={announcement.id} className="border-l-4 pl-4 py-2" style={{
-                        borderColor: announcement.priority === 'high' ? '#ef4444' : 
-                                   announcement.priority === 'medium' ? '#f59e0b' : '#10b981'
-                      }}>
-                        <h4 className="font-medium text-primary-700 dark:text-primary-200">{announcement.title}</h4>
-                        <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">{announcement.content}</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">{announcement.date}</p>
+              <div className="rounded-3xl border border-primary-100 bg-white p-6 shadow-soft dark:border-slate-800 dark:bg-slate-900">
+                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-primary-600">Today</p>
+                <div className="mt-6 space-y-5">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">Attendance streak</p>
+                      <p className="text-xs text-slate-400">{attendance.present} / {attendance.total} days</p>
+                    </div>
+                    <span className="rounded-full bg-primary-50 px-3 py-1 text-xs font-semibold text-primary-600">{attendance.percentage}%</span>
+                  </div>
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">Assignments due</p>
+                      <p className="text-xs text-slate-400">{assignments.filter((a) => a.status === 'Pending').length} remaining</p>
+                    </div>
+                    <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-600">
+                      {assignments.length}
+                    </span>
+                  </div>
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">Upcoming event</p>
+                      <p className="text-xs text-slate-400">{upcomingEvents[0]?.title}</p>
+                    </div>
+                    <span className="rounded-full bg-primary-100/70 px-3 py-1 text-xs font-semibold text-primary-600">
+                      {upcomingEvents[0]?.date}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section>{renderStatCards()}</section>
+
+            <section className="grid grid-cols-1 gap-6 lg:grid-cols-[1.7fr_1fr]">
+              <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Assignments timeline</h3>
+                  <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">{assignments.length} total</span>
+                </div>
+                <div className="mt-5 space-y-4">
+                  {assignments.map((assignment) => (
+                    <div key={assignment.id} className="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 px-4 py-4 text-sm shadow-sm transition hover:border-primary-200 dark:border-slate-700 dark:hover:border-primary-400">
+                      <div>
+                        <p className="text-base font-semibold text-slate-800 dark:text-white">{assignment.title}</p>
+                        <p className="text-xs text-slate-500">{assignment.subject}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Due</p>
+                        <p className="text-sm text-slate-600 dark:text-slate-300">{assignment.dueDate}</p>
+                        <span className={`mt-2 inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${
+                          assignment.status === 'Submitted'
+                            ? 'bg-green-100 text-green-600 dark:bg-green-900/40 dark:text-green-300'
+                            : 'bg-amber-100 text-amber-600 dark:bg-amber-900/40 dark:text-amber-300'
+                        }`}>
+                          {assignment.status}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                  <h3 className="text-lg font-semibold text-slate-900 dark:text-white">{t('announcements')}</h3>
+                  <div className="mt-4 space-y-4">
+                    {announcements.map((announcement) => (
+                      <div
+                        key={announcement.id}
+                        className="rounded-2xl border border-slate-200/80 bg-slate-50/80 px-4 py-4 dark:border-slate-700 dark:bg-slate-800/60"
+                      >
+                        <p className="text-sm font-semibold text-slate-800 dark:text-white">{announcement.title}</p>
+                        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{announcement.content}</p>
+                        <p className="mt-2 text-xs text-slate-400">{announcement.date}</p>
                       </div>
                     ))}
                   </div>
                 </div>
               </div>
-            </div>
+            </section>
+
+            <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+              <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">{t('upcoming_events')}</h3>
+                <div className="mt-4 space-y-4">
+                  {upcomingEvents.map((event) => (
+                    <div key={event.id} className="flex items-center justify-between rounded-2xl border border-slate-200 px-4 py-4 text-sm dark:border-slate-700">
+                      <div>
+                        <p className="font-semibold text-slate-800 dark:text-white">{event.title}</p>
+                        <p className="text-xs text-slate-500">{event.location}</p>
+                      </div>
+                      <div className="text-right text-xs text-slate-500">
+                        <p>{event.date}</p>
+                        <p>{event.time}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Weekly attendance snapshot</h3>
+                <div className="mt-4 space-y-3 text-sm text-slate-600 dark:text-slate-300">
+                  {attendance.details.slice(0, 5).map((entry) => (
+                    <div key={entry.date} className="flex items-center justify-between rounded-2xl border border-slate-100 px-4 py-3 dark:border-slate-700">
+                      <span>{entry.date}</span>
+                      <span className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                        entry.status === 'present'
+                          ? 'bg-green-100 text-green-600 dark:bg-green-900/40 dark:text-green-300'
+                          : entry.status === 'late'
+                          ? 'bg-amber-100 text-amber-600 dark:bg-amber-900/40 dark:text-amber-300'
+                          : 'bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-300'
+                      }`}>
+                        {entry.status}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
           </div>
         );
       
